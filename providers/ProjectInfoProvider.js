@@ -53,11 +53,14 @@ export function ProjectInfoProvider({ children }) {
           ...updatedFileMap,
           [layer]: {
             ...updatedFileMap[layer],
-            childrenIds: [...updatedFileMap[layer].childrenIds, rarity.name],
+            childrenIds: [
+              ...updatedFileMap[layer].childrenIds,
+              layer + "/" + rarity.name,
+            ],
             childrenCount: updatedFileMap[layer].childrenCount + 1,
           },
-          [rarity.name]: {
-            id: rarity.name,
+          [layer + "/" + rarity.name]: {
+            id: layer + "/" + rarity.name,
             name: rarity.name,
             isDir: true,
             childrenIds: [],
