@@ -84,7 +84,7 @@ export function ProjectInfoProvider({ children }) {
   };
 
   const removeLayer = (layer) => {
-    setLayers(layers.filter((element) => element !== layer));
+    setLayers([...layers.filter((element) => element !== layer)]);
   };
 
   // Rarity operations
@@ -115,7 +115,9 @@ export function ProjectInfoProvider({ children }) {
   };
 
   const removeRarity = (rarity) => {
-    setRarities(rarities.filter((element) => element.name !== rarity.name));
+    setRarities([
+      ...rarities.filter((element) => element.name !== rarity.name),
+    ]);
   };
 
   const updateRarityLayers = (rarity, layer, action) => {
