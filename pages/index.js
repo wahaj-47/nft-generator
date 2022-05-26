@@ -9,10 +9,10 @@ import Head from "../components/presentational/Head";
 import Main from "../components/presentational/Main";
 import Row from "../components/presentational/Row";
 
-import { setChonkyDefaults } from "chonky";
-import { ChonkyIconFA } from "chonky-icon-fontawesome";
+// import { setChonkyDefaults } from "chonky";
+// import { ChonkyIconFA } from "chonky-icon-fontawesome";
 
-setChonkyDefaults({ iconComponent: ChonkyIconFA });
+// setChonkyDefaults({ iconComponent: ChonkyIconFA });
 
 export default function Home() {
   return (
