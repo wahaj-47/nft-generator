@@ -90,6 +90,10 @@ export function ProjectInfoProvider({ children }) {
   };
 
   const removeLayer = (layer) => {
+    if (rarities.length > 0) {
+      alert("Remove the rarities before removing the layers");
+      return;
+    }
     setLayers(layers.filter((element) => element !== layer));
   };
 
