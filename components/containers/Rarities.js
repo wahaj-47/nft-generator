@@ -73,7 +73,7 @@ export default function Rarities() {
       </Row>
 
       {rarities.map((rarity) => (
-        <div>
+        <div key={rarity.name}>
           <Row className={"center"}>
             Name:<Input disabled value={rarity.name}></Input>
           </Row>

@@ -41,7 +41,7 @@ export default function Layers() {
       </Row>
 
       {layers.map((layer) => (
-        <Row>
+        <Row key={layer}>
           <Input disabled value={layer}></Input>
           <Button onClick={handleRemove(layer)}>Remove</Button>
         </Row>
