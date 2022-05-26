@@ -14,3 +14,46 @@ a {
 * {
   box-sizing: border-box;
 }
+
+.module {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  border: 2px solid #24263c;
+  border-collapse: collapse;
+  border-radius: 10px;
+  margin: 5px;
+}
+
+.moduleHeader {
+  margin-bottom: 20px;
+}
+
+.module h1 {
+  font-size: large;
+  margin: 0;
+}
+
+.center {
+  align-items: center;
+}
+
+.space-between {
+  justify-content: space-between;
+}
+
+.mr-5 {
+  margin-right: 5px;
+}
+
+.wrap {
+  flex-wrap: wrap;
+}
+
+.divider {
+  height: 1px;
+  background-color: #24263c;
+  width: 100%;
+  margin: 20px 0;
+}

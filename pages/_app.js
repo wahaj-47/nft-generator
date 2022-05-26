@@ -1,7 +1,12 @@
-import '../styles/globals.css'
+import { ProjectInfoProvider } from "../providers/ProjectInfoProvider";
+import "../styles/globals.css";
 
 function MyApp({ Component, pageProps }) {
-  return <Component {...pageProps} />
+  return (
+    <ProjectInfoProvider>
+      <Component {...pageProps} />
+    </ProjectInfoProvider>
+  );
 }
 
-export default MyApp
+export default MyApp;

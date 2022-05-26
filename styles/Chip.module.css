@@ -1,0 +1,15 @@
+.chip {
+  background-color: #24263c;
+  padding: 5px 10px;
+  border-radius: 5px;
+  margin: 5px;
+  cursor: pointer;
+}
+
+.chip:hover {
+  background-color: #3c4066;
+}
+
+.selected {
+  background-color: #3c4066;
+}
