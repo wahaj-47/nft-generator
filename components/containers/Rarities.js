@@ -98,6 +98,7 @@ export default function Rarities() {
               if (selected) action = "remove";
               return (
                 <Chip
+                  key={layer}
                   onClick={handleClick(rarity, layer, action)}
                   selected={selected}
                 >
