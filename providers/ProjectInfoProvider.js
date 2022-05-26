@@ -31,7 +31,7 @@ export function ProjectInfoProvider({ children }) {
         ...updatedFileMap,
         root: {
           ...updatedFileMap.root,
-          childrenIds: [layer],
+          childrenIds: [...updatedFileMap.root.childrenIds, layer],
           childrenCount: updatedFileMap.root.childrenCount + 1,
         },
         [layer]: {
@@ -45,13 +45,15 @@ export function ProjectInfoProvider({ children }) {
       };
     });
 
+    console.log(layers, updatedFileMap);
+
     rarities.forEach((rarity) => {
       rarity.layers.forEach((layer) => {
         updatedFileMap = {
           ...updatedFileMap,
           [layer]: {
             ...updatedFileMap[layer],
-            childrenIds: [rarity.name],
+            childrenIds: [...updatedFileMap[layer].childrenIds, rarity.name],
             childrenCount: updatedFileMap[layer].childrenCount + 1,
           },
           [rarity.name]: {

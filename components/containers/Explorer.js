@@ -1,5 +1,13 @@
 import styles from "../../styles/Explorer.module.css";
-import { ChonkyActions, FileHelper, FullFileBrowser } from "chonky";
+import {
+  ChonkyActions,
+  FileContextMenu,
+  FileHelper,
+  FileList,
+  FileNavbar,
+  FileToolbar,
+  FullFileBrowser,
+} from "chonky";
 import { useProjectInfoContext } from "../../providers/ProjectInfoProvider";
 import { useCallback, useMemo, useState } from "react";
 
@@ -67,7 +75,12 @@ export default function Explorer() {
         files={files}
         folderChain={folderChain}
         onFileAction={handleFileAction}
-      ></FullFileBrowser>
+      >
+        <FileNavbar />
+        <FileToolbar />
+        <FileList />
+        <FileContextMenu />
+      </FullFileBrowser>
     </div>
   );
 }
