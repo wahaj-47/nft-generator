@@ -24,7 +24,15 @@ export function ProjectInfoProvider({ children }) {
   });
 
   useEffect(() => {
-    let updatedFileMap = fileMap;
+    let updatedFileMap = {
+      root: {
+        id: "root",
+        name: "Home",
+        isDir: true,
+        childrenIds: [],
+        childrenCount: 0,
+      },
+    };
 
     layers.forEach((layer) => {
       updatedFileMap = {
@@ -44,8 +52,6 @@ export function ProjectInfoProvider({ children }) {
         },
       };
     });
-
-    console.log(layers, updatedFileMap);
 
     rarities.forEach((rarity) => {
       rarity.layers.forEach((layer) => {
