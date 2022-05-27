@@ -12,6 +12,7 @@ export function ProjectInfoProvider({ children }) {
     height: 0,
     width: 0,
   });
+  const [files, setFiles] = useState([]);
 
   const [fileMap, setFileMap] = useState({
     root: {
@@ -81,6 +82,33 @@ export function ProjectInfoProvider({ children }) {
 
     setFileMap(updatedFileMap);
   }, [layers, rarities]);
+
+  useEffect(() => {
+    console.log("Updating filemap");
+
+    let updatedFileMap = fileMap;
+
+    files.forEach((file) => {
+      updatedFileMap = {
+        ...updatedFileMap,
+        [file.parent]: {
+          ...updatedFileMap[file.parent],
+          childrenIds: [
+            ...updatedFileMap[file.parent].childrenIds,
+            file.file.name,
+          ],
+          childrenCount: updatedFileMap[file.parent].childrenIds.length,
+        },
+        [file.file.name]: {
+          id: file.file.name,
+          name: file.file.name,
+          thumbnailUrl: file.url,
+        },
+      };
+    });
+
+    setFileMap(updatedFileMap);
+  }, [files]);
 
   // Layers operations
   const addLayer = (layer) => {
@@ -174,6 +202,11 @@ export function ProjectInfoProvider({ children }) {
     );
   };
 
+  const addFile = (file, currentFolderId) => {
+    const url = URL.createObjectURL(file);
+    setFiles([...files, { file, url, parent: currentFolderId }]);
+  };
+
   // Project settings
   const updateProjectSettings = (key) => (e) => {
     setProjectSettings({ ...projectSettings, [key]: e.target.value });
@@ -202,6 +235,8 @@ export function ProjectInfoProvider({ children }) {
         removeRarity,
         updateRarityLayers,
         updateRarityPercentage,
+        files,
+        addFile,
         projectSettings,
         updateProjectSettings,
         fileMap,
