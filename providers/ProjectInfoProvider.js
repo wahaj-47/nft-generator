@@ -46,7 +46,6 @@ export function ProjectInfoProvider({ children }) {
           name: layer,
           isDir: true,
           childrenIds: [],
-          childrenCount: 0,
           parentId: "root",
           droppable: false,
         },
