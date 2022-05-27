@@ -20,7 +20,6 @@ export function ProjectInfoProvider({ children }) {
       name: "Home",
       isDir: true,
       childrenIds: [],
-      childrenCount: 0,
     },
   });
 
@@ -31,7 +30,6 @@ export function ProjectInfoProvider({ children }) {
         name: "Home",
         isDir: true,
         childrenIds: [],
-        childrenCount: 0,
         droppable: false,
       },
     };
@@ -42,7 +40,6 @@ export function ProjectInfoProvider({ children }) {
         root: {
           ...updatedFileMap.root,
           childrenIds: [...updatedFileMap.root.childrenIds, layer],
-          childrenCount: updatedFileMap.root.childrenCount + 1,
         },
         [layer]: {
           id: layer,
@@ -66,14 +63,12 @@ export function ProjectInfoProvider({ children }) {
               ...updatedFileMap[layer].childrenIds,
               layer + "/" + rarity.name,
             ],
-            childrenCount: updatedFileMap[layer].childrenCount + 1,
           },
           [layer + "/" + rarity.name]: {
             id: layer + "/" + rarity.name,
             name: rarity.name,
             isDir: true,
             childrenIds: [],
-            childrenCount: 0,
             parentId: layer,
           },
         };
@@ -84,8 +79,6 @@ export function ProjectInfoProvider({ children }) {
   }, [layers, rarities]);
 
   useEffect(() => {
-    console.log("Updating filemap");
-
     let updatedFileMap = fileMap;
 
     files.forEach((file) => {
@@ -97,7 +90,6 @@ export function ProjectInfoProvider({ children }) {
             ...updatedFileMap[file.parent].childrenIds,
             file.file.name,
           ],
-          childrenCount: updatedFileMap[file.parent].childrenIds.length,
         },
         [file.file.name]: {
           id: file.file.name,
