@@ -31,6 +31,7 @@ export function ProjectInfoProvider({ children }) {
         isDir: true,
         childrenIds: [],
         childrenCount: 0,
+        droppable: false,
       },
     };
 
@@ -49,6 +50,7 @@ export function ProjectInfoProvider({ children }) {
           childrenIds: [],
           childrenCount: 0,
           parentId: "root",
+          droppable: false,
         },
       };
     });
