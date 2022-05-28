@@ -63,7 +63,7 @@ export const useFileActionHandler = ({ setCurrentFolderId, fileInputRef }) => {
         removeFiles(selectedFiles);
       }
     },
-    [setCurrentFolderId, fileInputRef]
+    [setCurrentFolderId, fileInputRef, removeFiles]
   );
 };
 

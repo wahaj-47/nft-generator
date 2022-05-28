@@ -22,7 +22,7 @@ export default function LinkRarities() {
             Rarity:<Input disabled value={rarity.name}></Input>
           </Row>
           {rarity.layers.map((layer) => (
-            <div>
+            <div key={layer.name}>
               <Row className={"center space-between"}>
                 <Row className={"center"}>
                   Layer:<Input disabled value={layer.name}></Input>
@@ -44,7 +44,7 @@ export default function LinkRarities() {
                 <div className={`module`}>
                   <h2>Rarity Percentages</h2>
                   {layer.rarities.map((layerRarity) => (
-                    <Row className={"center"}>
+                    <Row key={layerRarity.name} className={"center"}>
                       {layerRarity.name}:{" "}
                       {Number(layerRarity.percentage).toFixed(1)}%
                       <Input
