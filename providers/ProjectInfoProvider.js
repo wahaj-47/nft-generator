@@ -335,6 +335,7 @@ export function ProjectInfoProvider({ children }) {
       height: "",
       width: "",
     });
+    setFiles([]);
   };
 
   const submit = () => {
