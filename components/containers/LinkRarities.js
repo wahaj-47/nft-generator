@@ -68,8 +68,6 @@ export default function LinkRarities() {
           ))}
         </div>
       ))}
-
-      <Divider></Divider>
     </div>
   );
 }
