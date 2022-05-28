@@ -5,6 +5,10 @@ const ProjectInfoContext = createContext();
 export function ProjectInfoProvider({ children }) {
   const [layers, setLayers] = useState([]);
   const [rarities, setRarities] = useState([]);
+  const [
+    raritiesWithLayersRequiringPercentage,
+    setRaritiesWithLayersRequiringPercentage,
+  ] = useState([]);
   const [projectSettings, setProjectSettings] = useState({
     name: "",
     description: "",
@@ -74,24 +78,15 @@ export function ProjectInfoProvider({ children }) {
       });
     });
 
-    setFileMap(updatedFileMap);
-  }, [layers, rarities]);
-
-  useEffect(() => {
-    let updatedFileMap = fileMap;
-
     files.forEach((file) => {
       updatedFileMap = {
         ...updatedFileMap,
         [file.parent]: {
           ...updatedFileMap[file.parent],
-          childrenIds: [
-            ...updatedFileMap[file.parent].childrenIds,
-            file.file.name,
-          ],
+          childrenIds: [...updatedFileMap[file.parent].childrenIds, file.id],
         },
-        [file.file.name]: {
-          id: file.file.name,
+        [file.id]: {
+          id: file.id,
           name: file.file.name,
           thumbnailUrl: file.url,
         },
@@ -99,7 +94,7 @@ export function ProjectInfoProvider({ children }) {
     });
 
     setFileMap(updatedFileMap);
-  }, [files]);
+  }, [layers, rarities, files]);
 
   // Layers operations
   const addLayer = (layer) => {
@@ -193,9 +188,136 @@ export function ProjectInfoProvider({ children }) {
     );
   };
 
+  // Rarity link operations=
+  const setLayerVisibility = (updatedRarity, updatedLayer) => (e) => {
+    setRaritiesWithLayersRequiringPercentage(
+      raritiesWithLayersRequiringPercentage.map((rarity) => {
+        if (rarity.name === updatedRarity.name) {
+          return {
+            ...rarity,
+            layers: rarity.layers.map((layer) => {
+              if (layer.name === updatedLayer.name) {
+                return {
+                  ...layer,
+                  visible: e.target.checked,
+                };
+              }
+              return layer;
+            }),
+          };
+        }
+        return rarity;
+      })
+    );
+  };
+
+  const setLayerRarityPercentage =
+    (updatedRarity, updatedLayer, updatedLayerRarity) => (e) => {
+      setRaritiesWithLayersRequiringPercentage(
+        raritiesWithLayersRequiringPercentage.map((rarity) => {
+          if (rarity.name === updatedRarity.name) {
+            return {
+              ...rarity,
+              layers: rarity.layers.map((layer) => {
+                if (layer.name === updatedLayer.name) {
+                  const updatedRarities = layer.rarities.map((rarity) => {
+                    if (rarity.name === updatedLayerRarity.name) {
+                      return { ...rarity, sliderValue: e.target.value };
+                    }
+                    return rarity;
+                  });
+
+                  const totalSliderValue = updatedRarities.reduce(
+                    (previousValue, currentValue) => {
+                      return (
+                        Number(previousValue) + Number(currentValue.sliderValue)
+                      );
+                    },
+                    0
+                  );
+
+                  return {
+                    ...layer,
+                    rarities: updatedRarities.map((element) => ({
+                      ...element,
+                      percentage:
+                        (element.sliderValue * 100) / totalSliderValue,
+                    })),
+                  };
+                }
+                return layer;
+              }),
+            };
+          }
+          return rarity;
+        })
+      );
+    };
+
+  useEffect(() => {
+    const raritiesMissingLayers = rarities.filter(
+      (rarity) => rarity.layers.length < layers.length
+    );
+
+    setRaritiesWithLayersRequiringPercentage(
+      raritiesMissingLayers.map((rarity) => {
+        const layersRequiringPercentage = layers
+          .filter(
+            (missingLayer) =>
+              !rarity.layers.some((layer) => layer === missingLayer)
+          )
+          .map((layer) => {
+            let raritiesWithMissingLayer = rarities.filter(
+              (rarityWithMissingLayer) =>
+                rarityWithMissingLayer.layers.includes(layer)
+            );
+
+            let percentage = 100 / raritiesWithMissingLayer.length;
+            raritiesWithMissingLayer = raritiesWithMissingLayer.map(
+              (rarity) => ({
+                ...rarity,
+                percentage,
+                sliderValue: 50,
+              })
+            );
+
+            return {
+              name: layer,
+              visible: raritiesWithMissingLayer.length > 0,
+              rarities: raritiesWithMissingLayer,
+              disabled: raritiesWithMissingLayer.length < 1,
+            };
+          });
+
+        return {
+          ...rarity,
+          layers: layersRequiringPercentage,
+        };
+      })
+    );
+  }, [rarities, layers]);
+
+  // File operations
   const addFile = (file, currentFolderId) => {
     const url = URL.createObjectURL(file);
-    setFiles([...files, { file, url, parent: currentFolderId }]);
+    setFiles([
+      ...files,
+      {
+        id: `${currentFolderId}/${file.name}`,
+        file,
+        url,
+        parent: currentFolderId,
+      },
+    ]);
+  };
+
+  const removeFiles = (selectedFiles) => {
+    setFiles(
+      files.filter(
+        (file) =>
+          !selectedFiles.some((selectedFile) => selectedFile.id === file.id)
+      )
+    );
   };
 
   // Project settings
@@ -215,6 +337,55 @@ export function ProjectInfoProvider({ children }) {
     });
   };
 
+  const submit = () => {
+    if (!projectSettings.name) {
+      alert("Enter collection name");
+      return;
+    }
+    if (!projectSettings.description) {
+      alert("Enter collection description");
+      return;
+    }
+    if (!projectSettings.size) {
+      alert("Enter collection size");
+      return;
+    }
+    if (!projectSettings.width) {
+      alert("Enter image width");
+      return;
+    }
+    if (!projectSettings.height) {
+      alert("Enter image height");
+      return;
+    }
+    if (layers.length < 1) {
+      alert("Add atleast one layer");
+      return;
+    }
+    if (rarities.length < 1) {
+      alert("Add atleast one rairty");
+      return;
+    }
+    if (files.length < 1) {
+      alert("Add files for layers");
+      return;
+    }
+
+    let totalCount = 0;
+
+    const links = rarities.map((rarity) => {
+      const count = rarity.percentage * projectSettings.size;
+      return { ...rarity, count };
+    });
+
+    if (totalCount > projectSettings.size) {
+      const difference = totalCount - projectSettings.size;
+      links[links.length - 1].count -= difference;
+    }
+
+    const data = { ...projectSettings, layers, links };
+  };
+
   return (
     <ProjectInfoContext.Provider
       value={{
@@ -226,12 +397,17 @@ export function ProjectInfoProvider({ children }) {
         removeRarity,
         updateRarityLayers,
         updateRarityPercentage,
+        raritiesWithLayersRequiringPercentage,
+        setLayerVisibility,
+        setLayerRarityPercentage,
         files,
         addFile,
+        removeFiles,
         projectSettings,
         updateProjectSettings,
         fileMap,
         reset,
+        submit,
       }}
     >
       {children}

@@ -9,3 +9,8 @@
   font-size: medium;
   border-radius: 5px;
 }
+
+.disabled {
+  background-color: rgba(0, 0, 0, 0.5);
+  cursor: not-allowed;
+}

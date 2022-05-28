@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useProjectInfoContext } from "../../providers/ProjectInfoProvider";
-import styles from "../../styles/Layers.module.css";
 import Button from "../presentational/Button";
 import Divider from "../presentational/Divider";
 import Input from "../presentational/Input";
@@ -35,19 +34,10 @@ export default function Layers() {
   };
 
   return (
-    <div className={`module ${styles.container}`}>
+    <div className={`module`}>
       <Row className={`center space-between moduleHeader`}>
         <h1>Layers</h1>
       </Row>
-
-      {layers.map((layer) => (
-        <Row key={layer}>
-          <Input disabled value={layer}></Input>
-          <Button onClick={handleRemove(layer)}>Remove</Button>
-        </Row>
-      ))}
-
-      <Divider></Divider>
 
       <Row>
         <Input
@@ -58,6 +48,15 @@ export default function Layers() {
         ></Input>
         <Button onClick={handleAdd}>Add</Button>
       </Row>
+
+      <Divider></Divider>
+
+      {layers.map((layer) => (
+        <Row key={layer}>
+          <Input disabled value={layer}></Input>
+          <Button onClick={handleRemove(layer)}>Remove</Button>
+        </Row>
+      ))}
     </div>
   );
 }

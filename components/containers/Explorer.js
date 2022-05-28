@@ -1,13 +1,4 @@
-import styles from "../../styles/Explorer.module.css";
-import {
-  ChonkyActions,
-  FileContextMenu,
-  FileHelper,
-  FileList,
-  FileNavbar,
-  FileToolbar,
-  FullFileBrowser,
-} from "chonky";
+import { ChonkyActions, FileHelper, FullFileBrowser } from "chonky";
 import { useProjectInfoContext } from "../../providers/ProjectInfoProvider";
 import { useCallback, useMemo, useRef, useState } from "react";
 
@@ -52,6 +43,8 @@ export const useFolderChain = (currentFolderId) => {
 };
 
 export const useFileActionHandler = ({ setCurrentFolderId, fileInputRef }) => {
+  const { removeFiles } = useProjectInfoContext();
+
   return useCallback(
     (data) => {
       if (data.id === ChonkyActions.OpenFiles.id) {
@@ -64,6 +57,10 @@ export const useFileActionHandler = ({ setCurrentFolderId, fileInputRef }) => {
       }
       if (data.id === ChonkyActions.UploadFiles.id) {
         fileInputRef.current.click();
+      }
+      if (data.id === ChonkyActions.DeleteFiles.id) {
+        const selectedFiles = data.state.selectedFiles;
+        removeFiles(selectedFiles);
       }
     },
     [setCurrentFolderId, fileInputRef]
@@ -89,10 +86,11 @@ export default function Explorer() {
 
   const onFileChange = (e) => {
     addFile(e.target.files[0], currentFolderId);
+    fileInputRef.current.value = "";
   };
 
   return (
-    <div className={`module ${styles.container}`}>
+    <div className={`module`}>
       <h1>Files</h1>
       <FullFileBrowser
         files={files}
@@ -103,6 +101,7 @@ export default function Explorer() {
         clearSelectionOnOutsideClick
       ></FullFileBrowser>
       <input
+        value={null}
         type="file"
         ref={fileInputRef}
         onChange={onFileChange}

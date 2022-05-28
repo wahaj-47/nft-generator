@@ -35,6 +35,10 @@ a {
   margin: 0;
 }
 
+.module h2 {
+  font-size: medium;
+}
+
 .center {
   align-items: center;
 }
@@ -64,4 +68,8 @@ a {
 
 .flex {
   flex: 1;
+}
+
+.flex-0 {
+  flex: 0;
 }

@@ -1,6 +1,5 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { useProjectInfoContext } from "../../providers/ProjectInfoProvider";
-import styles from "../../styles/Rarities.module.css";
 import Button from "../presentational/Button";
 import Chip from "../presentational/Chip";
 import Divider from "../presentational/Divider";
@@ -67,10 +66,24 @@ export default function Rarities() {
   };
 
   return (
-    <div className={`module ${styles.container}`}>
+    <div className={`module`}>
       <Row className={`center space-between moduleHeader`}>
         <h1>Rarities</h1>
       </Row>
+
+      <Row className={"center"}>
+        Name:
+        <Input
+          name="name"
+          value={rarity}
+          onChange={handleChange}
+          onKeyDown={handleKeyDown}
+          placeholder="New rarity"
+        ></Input>
+        <Button onClick={handleAdd}>Add</Button>
+      </Row>
+
+      <Divider></Divider>
 
       {rarities.map((rarity) => (
         <div key={rarity.name}>
@@ -109,20 +122,6 @@ export default function Rarities() {
           </Row>
         </div>
       ))}
-
-      <Divider></Divider>
-
-      <Row className={"center"}>
-        Name:
-        <Input
-          name="name"
-          value={rarity}
-          onChange={handleChange}
-          onKeyDown={handleKeyDown}
-          placeholder="New rarity"
-        ></Input>
-        <Button onClick={handleAdd}>Add</Button>
-      </Row>
     </div>
   );
 }
