@@ -15,7 +15,10 @@ const useFiles = (currentFolderId) => {
   const { fileMap } = useProjectInfoContext();
 
   return useMemo(() => {
-    const currentFolder = fileMap[currentFolderId];
+    let currentFolder = fileMap[currentFolderId];
+
+    if (!currentFolder) currentFolder = fileMap.root;
+
     const files = currentFolder.childrenIds
       ? currentFolder.childrenIds.map((fileId) => fileMap[fileId] ?? null)
       : [];
@@ -27,7 +30,9 @@ export const useFolderChain = (currentFolderId) => {
   const { fileMap } = useProjectInfoContext();
 
   return useMemo(() => {
-    const currentFolder = fileMap[currentFolderId];
+    let currentFolder = fileMap[currentFolderId];
+
+    if (!currentFolder) currentFolder = fileMap.root;
 
     const folderChain = [currentFolder];
 
@@ -96,12 +101,7 @@ export default function Explorer() {
         onFileAction={handleFileAction}
         darkMode
         clearSelectionOnOutsideClick
-      >
-        <FileNavbar />
-        <FileToolbar />
-        <FileList />
-        <FileContextMenu />
-      </FullFileBrowser>
+      ></FullFileBrowser>
       <input
         type="file"
         ref={fileInputRef}

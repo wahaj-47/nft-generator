@@ -10,10 +10,10 @@ import Main from "../components/presentational/Main";
 import Row from "../components/presentational/Row";
 
 import { setChonkyDefaults } from "chonky";
-// import { ChonkyIconFA } from "chonky-icon-fontawesome";
+import { ChonkyIconFA } from "chonky-icon-fontawesome";
 
 setChonkyDefaults({
-  // iconComponent: ChonkyIconFA,
+  iconComponent: ChonkyIconFA,
   disableDragAndDrop: true,
 });
 

@@ -53,6 +53,12 @@ export default function ProjectSettings() {
           onChange={updateProjectSettings("height")}
         ></Input>
       </Row>
+      <Row className={"space-between"}>
+        <Button className={"flex mr-5"} disabled>
+          Preview
+        </Button>
+        <Button className={"flex ml-5"}>Generate</Button>
+      </Row>
     </div>
   );
 }

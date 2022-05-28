@@ -47,6 +47,10 @@ a {
   margin-right: 5px;
 }
 
+.ml-5 {
+  margin-left: 5px;
+}
+
 .wrap {
   flex-wrap: wrap;
 }
@@ -56,4 +60,8 @@ a {
   background-color: #24263c;
   width: 100%;
   margin: 20px 0;
+}
+
+.flex {
+  flex: 1;
 }

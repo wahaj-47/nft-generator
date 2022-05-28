@@ -3,6 +3,9 @@
   border-radius: 5px;
   padding: 10px 20px;
   cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
 .button:hover {
@@ -11,4 +14,13 @@
 
 .button:active {
   background-color: #24263c;
+}
+
+.disabled {
+  background-color: grey;
+  cursor: not-allowed;
+}
+
+.disabled:hover {
+  background-color: grey;
 }
