@@ -68,7 +68,7 @@ export const useFileActionHandler = ({ setCurrentFolderId, fileInputRef }) => {
 };
 
 export default function Explorer() {
-  const { addFile } = useProjectInfoContext();
+  const { addFiles } = useProjectInfoContext();
   const fileInputRef = useRef(null);
 
   const [currentFolderId, setCurrentFolderId] = useState("root");
@@ -85,7 +85,10 @@ export default function Explorer() {
       : [ChonkyActions.UploadFiles, ChonkyActions.DeleteFiles];
 
   const onFileChange = (e) => {
-    addFile(e.target.files[0], currentFolderId);
+    addFiles(e.target.files, currentFolderId, resetFileInput);
+  };
+
+  const resetFileInput = () => {
     fileInputRef.current.value = "";
   };
 
@@ -107,6 +110,7 @@ export default function Explorer() {
         onChange={onFileChange}
         style={{ display: "none" }}
         accept="image/png"
+        multiple
       />
     </div>
   );

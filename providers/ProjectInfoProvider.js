@@ -298,17 +298,20 @@ export function ProjectInfoProvider({ children }) {
   }, [rarities, layers]);
 
   // File operations
-  const addFile = (file, currentFolderId) => {
-    const url = URL.createObjectURL(file);
-    setFiles([
-      ...files,
-      {
+  const addFiles = (selectedFiles, currentFolderId, callback) => {
+    const formattedFiles = Array.from(selectedFiles).map((file) => {
+      const url = URL.createObjectURL(file);
+      return {
         id: `${currentFolderId}/${file.name}`,
         file,
         url,
         parent: currentFolderId,
-      },
-    ]);
+      };
+    });
+
+    setFiles([...files, ...formattedFiles]);
+
+    callback();
   };
 
   const removeFiles = (selectedFiles) => {
@@ -428,7 +431,7 @@ export function ProjectInfoProvider({ children }) {
         setLayerVisibility,
         setLayerRarityPercentage,
         files,
-        addFile,
+        addFiles,
         removeFiles,
         projectSettings,
         updateProjectSettings,
