@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
+import engine from "../services/engine";
 
 const ProjectInfoContext = createContext();
 
@@ -341,7 +342,7 @@ export function ProjectInfoProvider({ children }) {
     setFiles([]);
   };
 
-  const submit = () => {
+  const submit = async () => {
     if (!projectSettings.name) {
       alert("Enter collection name");
       return;
@@ -375,45 +376,61 @@ export function ProjectInfoProvider({ children }) {
       return;
     }
 
-    let totalCount = 0;
+    try {
+      let totalCount = 0;
 
-    const links = rarities.map((rarity) => {
-      const count = (rarity.percentage * projectSettings.size) / 100;
-      return { ...rarity, count };
-    });
+      const links = rarities.map((rarity) => {
+        const count = (rarity.percentage * projectSettings.size) / 100;
+        return { ...rarity, count };
+      });
 
-    if (totalCount > projectSettings.size) {
-      const difference = totalCount - projectSettings.size;
-      links[links.length - 1].count -= difference;
+      if (totalCount > projectSettings.size) {
+        const difference = totalCount - projectSettings.size;
+        links[links.length - 1].count -= difference;
+      }
+
+      const linkRelations = raritiesWithLayersRequiringPercentage
+        .filter((rarity) => rarity.layers.some((layer) => layer.visible))
+        .map((rarity) => ({
+          ...rarity,
+          layers: rarity.layers.filter((layer) => layer.visible),
+        }))
+        .map((rarity) =>
+          rarity.layers.map((layer) => {
+            const percentages = {};
+            layer.rarities.forEach((rarity) => {
+              percentages[rarity.name] = rarity.percentage;
+            });
+            return { link: rarity.name, layer: layer.name, percentages };
+          })
+        )
+        .flat();
+
+      const data = {
+        name: projectSettings.name,
+        description: projectSettings.description,
+        size: Number(projectSettings.size),
+        width: Number(projectSettings.width),
+        height: Number(projectSettings.height),
+        layers,
+        links,
+        linkRelations,
+      };
+
+      const formData = new FormData();
+      files.forEach((file) => {
+        formData.set(file.id, file.file, file.file.name);
+      });
+
+      const collectionId = await engine.setup(data);
+      formData.set("collectionId", collectionId);
+
+      await engine.uploadFiles(formData);
+
+      await engine.generate(collectionId);
+    } catch (error) {
+      console.log(error);
     }
-
-    const linkRelations = raritiesWithLayersRequiringPercentage
-      .filter((rarity) => rarity.layers.some((layer) => layer.visible))
-      .map((rarity) => ({
-        ...rarity,
-        layers: rarity.layers.filter((layer) => layer.visible),
-      }))
-      .map((rarity) =>
-        rarity.layers.map((layer) => {
-          const percentages = {};
-          layer.rarities.forEach((rarity) => {
-            percentages[rarity.name] = rarity.percentage;
-          });
-          return { link: rarity.name, layer: layer.name, percentages };
-        })
-      )
-      .flat();
-
-    const data = {
-      name: projectSettings.name,
-      description: projectSettings.description,
-      size: Number(projectSettings.size),
-      width: Number(projectSettings.width),
-      height: Number(projectSettings.height),
-      layers,
-      links,
-      linkRelations,
-    };
   };
 
   return (

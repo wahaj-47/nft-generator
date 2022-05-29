@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "axios": "^0.27.2",
     "chonky": "^2.3.2",
     "chonky-icon-fontawesome": "^2.3.2",
     "next": "12.1.6",
