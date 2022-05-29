@@ -427,7 +427,9 @@ export function ProjectInfoProvider({ children }) {
 
       await engine.uploadFiles(formData);
 
-      await engine.generate(collectionId);
+      const downloadLink = await engine.generate(collectionId);
+
+      window.open(downloadLink);
     } catch (error) {
       console.log(error);
     }
