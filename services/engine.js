@@ -1,5 +1,6 @@
 import axios from "axios";
-const BASE_URL = "https://space-buddies-nft-engine.herokuapp.com";
+// const BASE_URL = "https://space-buddies-nft-engine.herokuapp.com";
+const BASE_URL = "http://192.168.0.112:4000";
 
 const engine = {
   setup: async (values) => {
@@ -22,9 +23,11 @@ const engine = {
   },
   generate: async (collectionId) => {
     try {
-      await axios.post(`${BASE_URL}/generate`, {
-        collectionId,
+      const response = await axios.get(`${BASE_URL}/generate/${collectionId}`, {
+        responseType: "arraybuffer",
       });
+      const blob = new Blob([response.data], { type: "application/zip" });
+      return blob;
     } catch (error) {
       console.log(error);
     }

@@ -1,3 +1,4 @@
+import download from "downloadjs";
 import { createContext, useContext, useEffect, useState } from "react";
 import engine from "../services/engine";
 
@@ -427,7 +428,8 @@ export function ProjectInfoProvider({ children }) {
 
       await engine.uploadFiles(formData);
 
-      await engine.generate(collectionId);
+      const blob = await engine.generate(collectionId);
+      download(blob, `${collectionId}.zip`, "application/zip");
     } catch (error) {
       console.log(error);
     }
