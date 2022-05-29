@@ -16,6 +16,10 @@ export default function LinkRarities() {
         <h1>Link Rarities</h1>
       </Row>
 
+      {raritiesWithLayersRequiringPercentage.length < 1 ? (
+        <h2>None of the layers require linking</h2>
+      ) : null}
+
       {raritiesWithLayersRequiringPercentage.map((rarity) => (
         <div key={rarity.name}>
           <Row className={"center"}>

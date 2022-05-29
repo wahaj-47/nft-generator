@@ -375,7 +375,7 @@ export function ProjectInfoProvider({ children }) {
     let totalCount = 0;
 
     const links = rarities.map((rarity) => {
-      const count = rarity.percentage * projectSettings.size;
+      const count = (rarity.percentage * projectSettings.size) / 100;
       return { ...rarity, count };
     });
 
@@ -384,7 +384,33 @@ export function ProjectInfoProvider({ children }) {
       links[links.length - 1].count -= difference;
     }
 
-    const data = { ...projectSettings, layers, links };
+    const linkRelations = raritiesWithLayersRequiringPercentage
+      .filter((rarity) => rarity.layers.some((layer) => layer.visible))
+      .map((rarity) => ({
+        ...rarity,
+        layers: rarity.layers.filter((layer) => layer.visible),
+      }))
+      .map((rarity) =>
+        rarity.layers.map((layer) => {
+          const percentages = {};
+          layer.rarities.forEach((rarity) => {
+            percentages[rarity.name] = rarity.percentage;
+          });
+          return { link: rarity.name, layer: layer.name, percentages };
+        })
+      )
+      .flat();
+
+    const data = {
+      name: projectSettings.name,
+      description: projectSettings.description,
+      size: Number(projectSettings.size),
+      width: Number(projectSettings.width),
+      height: Number(projectSettings.height),
+      layers,
+      links,
+      linkRelations,
+    };
   };
 
   return (
