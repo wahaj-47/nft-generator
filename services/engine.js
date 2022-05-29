@@ -1,5 +1,5 @@
 import axios from "axios";
-const BASE_URL = "http://192.168.0.112:4000";
+const BASE_URL = "https://space-buddies-nft-engine.herokuapp.com";
 
 const engine = {
   setup: async (values) => {
