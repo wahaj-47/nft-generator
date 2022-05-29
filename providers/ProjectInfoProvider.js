@@ -19,7 +19,6 @@ export function ProjectInfoProvider({ children }) {
     width: 0,
   });
   const [files, setFiles] = useState([]);
-
   const [fileMap, setFileMap] = useState({
     root: {
       id: "root",
@@ -28,6 +27,13 @@ export function ProjectInfoProvider({ children }) {
       childrenIds: [],
     },
   });
+  const [collectionId, setCollectionId] = useState(null);
+  const [projectUpdated, setProjectUpdated] = useState(true);
+
+  useEffect(() => {
+    setCollectionId("");
+    setProjectUpdated(true);
+  }, [layers, rarities, projectSettings, files]);
 
   useEffect(() => {
     let updatedFileMap = {
@@ -423,13 +429,22 @@ export function ProjectInfoProvider({ children }) {
         formData.set(file.id, file.file, file.file.name);
       });
 
-      const collectionId = await engine.setup(data);
-      formData.set("collectionId", collectionId);
+      let newCollectionId = collectionId;
 
-      await engine.uploadFiles(formData);
+      if (!newCollectionId) {
+        newCollectionId = await engine.setup(data);
+        setCollectionId(newCollectionId);
+      }
 
-      const blob = await engine.generate(collectionId);
+      if (projectUpdated) {
+        formData.set("collectionId", newCollectionId);
+        await engine.uploadFiles(formData);
+      }
+
+      const blob = await engine.generate(newCollectionId);
       download(blob, `${collectionId}.zip`, "application/zip");
+
+      setProjectUpdated(false);
     } catch (error) {
       console.log(error);
     }
