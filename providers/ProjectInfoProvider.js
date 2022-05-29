@@ -442,7 +442,7 @@ export function ProjectInfoProvider({ children }) {
       }
 
       const blob = await engine.generate(newCollectionId);
-      download(blob, `${collectionId}.zip`, "application/zip");
+      download(blob, `${newCollectionId}.zip`, "application/zip");
 
       setProjectUpdated(false);
     } catch (error) {
