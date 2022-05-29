@@ -17,7 +17,7 @@ export default function LinkRarities() {
       </Row>
 
       {raritiesWithLayersRequiringPercentage.length < 1 ? (
-        <h2>None of the layers require linking</h2>
+        <p>None of the layers require linking</p>
       ) : null}
 
       {raritiesWithLayersRequiringPercentage.map((rarity) => (
