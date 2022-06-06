@@ -2,13 +2,14 @@ import { useProjectInfoContext } from "../../providers/ProjectInfoProvider";
 import Button from "../presentational/Button";
 import Input from "../presentational/Input";
 import Row from "../presentational/Row";
+import styles from "../../styles/ProjectSettings.module.css";
 
 export default function ProjectSettings() {
   const { projectSettings, updateProjectSettings, reset, submit } =
     useProjectInfoContext();
 
   return (
-    <div className={`module`}>
+    <div className={`module ${styles.container}`}>
       <Row className={`center space-between moduleHeader`}>
         <h1>Project Settings</h1>
         <Button onClick={reset}>Reset</Button>
