@@ -10,9 +10,9 @@ export default function Chip({ children, selected, onClick }) {
     >
       <Row className={"center"}>
         {selected ? (
-          <AiFillCloseCircle className="mr-5" color="#FF6961" />
-        ) : (
           <AiFillCheckCircle className="mr-5" color="#C1E1C1" />
+        ) : (
+          <AiFillCloseCircle className="mr-5" color="#FF6961" />
         )}
         {children}
       </Row>

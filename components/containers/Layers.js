@@ -4,9 +4,13 @@ import Button from "../presentational/Button";
 import Divider from "../presentational/Divider";
 import Input from "../presentational/Input";
 import Row from "../presentational/Row";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBars } from "@fortawesome/free-solid-svg-icons";
 
 export default function Layers() {
-  const { layers, addLayer, removeLayer } = useProjectInfoContext();
+  const { layers, addLayer, removeLayer, reorderLayers } =
+    useProjectInfoContext();
 
   const [layer, setLayer] = useState("");
 
@@ -33,6 +37,14 @@ export default function Layers() {
     }
   };
 
+  const handleDragEnd = (result) => {
+    if (!result.destination) {
+      return;
+    }
+
+    reorderLayers(result);
+  };
+
   return (
     <div className={`module`}>
       <Row className={`center space-between moduleHeader`}>
@@ -51,12 +63,30 @@ export default function Layers() {
 
       <Divider></Divider>
 
-      {layers.map((layer) => (
-        <Row key={layer}>
-          <Input disabled value={layer}></Input>
-          <Button onClick={handleRemove(layer)}>Remove</Button>
-        </Row>
-      ))}
+      <DragDropContext onDragEnd={handleDragEnd}>
+        <Droppable droppableId="droppable">
+          {(provided) => (
+            <div {...provided.droppableProps} ref={provided.innerRef}>
+              {layers.map((layer, index) => (
+                <Draggable key={layer} draggableId={layer} index={index}>
+                  {(provided) => (
+                    <Row
+                      innerRef={provided.innerRef}
+                      {...provided.draggableProps}
+                      {...provided.dragHandleProps}
+                      className="center"
+                    >
+                      <FontAwesomeIcon icon={faBars} />
+                      <Input disabled value={layer}></Input>
+                      <Button onClick={handleRemove(layer)}>Remove</Button>
+                    </Row>
+                  )}
+                </Draggable>
+              ))}
+            </div>
+          )}
+        </Droppable>
+      </DragDropContext>
     </div>
   );
 }

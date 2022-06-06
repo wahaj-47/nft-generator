@@ -8,6 +8,7 @@ import Row from "../presentational/Row";
 
 export default function Rarities() {
   const {
+    projectSettings,
     layers,
     rarities,
     addRarity,
@@ -90,6 +91,7 @@ export default function Rarities() {
           <Row className={"center"}>
             Name:<Input disabled value={rarity.name}></Input>
           </Row>
+
           <Row className={"center"}>
             Percentage: {Number(rarity.percentage).toFixed(1)}%
             <Input
@@ -103,6 +105,7 @@ export default function Rarities() {
             ></Input>
             <Button onClick={handleRemove(rarity)}>Remove</Button>
           </Row>
+
           <Row className={"wrap center"}>
             Layers:
             {layers.map((layer) => {

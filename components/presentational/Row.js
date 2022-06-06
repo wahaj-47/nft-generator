@@ -1,5 +1,13 @@
 import styles from "../../styles/Row.module.css";
 
-export default function Row({ children, className }) {
-  return <div className={[styles.row, className].join(" ")}>{children}</div>;
+export default function Row({ children, className, ...props }) {
+  return (
+    <div
+      ref={props.innerRef}
+      className={[styles.row, className].join(" ")}
+      {...props}
+    >
+      {children}
+    </div>
+  );
 }

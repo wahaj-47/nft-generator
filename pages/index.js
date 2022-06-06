@@ -12,6 +12,7 @@ import Row from "../components/presentational/Row";
 import { setChonkyDefaults } from "chonky";
 import { ChonkyIconFA } from "chonky-icon-fontawesome";
 import LinkRarities from "../components/containers/LinkRarities";
+import Header from "../components/containers/Header";
 
 setChonkyDefaults({
   iconComponent: ChonkyIconFA,
@@ -24,16 +25,20 @@ export default function Home() {
       <Head></Head>
 
       <Main>
+        <Header></Header>
+
         <Row>
           <Column>
+            <ProjectSettings></ProjectSettings>
             <Layers></Layers>
-            <Rarities></Rarities>
           </Column>
+
           <Column span={2}>
             <Explorer></Explorer>
           </Column>
+
           <Column>
-            <ProjectSettings></ProjectSettings>
+            <Rarities></Rarities>
             <LinkRarities></LinkRarities>
           </Column>
         </Row>

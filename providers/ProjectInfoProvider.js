@@ -14,9 +14,9 @@ export function ProjectInfoProvider({ children }) {
   const [projectSettings, setProjectSettings] = useState({
     name: "",
     description: "",
-    size: 0,
-    height: 0,
-    width: 0,
+    size: "",
+    height: "",
+    width: "",
   });
   const [files, setFiles] = useState([]);
   const [fileMap, setFileMap] = useState({
@@ -119,6 +119,23 @@ export function ProjectInfoProvider({ children }) {
       return;
     }
     setLayers(layers.filter((element) => element !== layer));
+  };
+
+  const reorder = (list, startIndex, endIndex) => {
+    const result = Array.from(list);
+    const [removed] = result.splice(startIndex, 1);
+    result.splice(endIndex, 0, removed);
+
+    return result;
+  };
+
+  const reorderLayers = (reorderedLayers) => {
+    const updatedLayers = reorder(
+      layers,
+      reorderedLayers.source.index,
+      reorderedLayers.destination.index
+    );
+    setLayers(updatedLayers);
   };
 
   // Rarity operations
@@ -388,6 +405,7 @@ export function ProjectInfoProvider({ children }) {
 
       const links = rarities.map((rarity) => {
         const count = (rarity.percentage * projectSettings.size) / 100;
+        totalCount += count;
         return { ...rarity, count };
       });
 
@@ -456,6 +474,7 @@ export function ProjectInfoProvider({ children }) {
         layers,
         addLayer,
         removeLayer,
+        reorderLayers,
         rarities,
         addRarity,
         removeRarity,
