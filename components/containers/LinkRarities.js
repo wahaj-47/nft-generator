@@ -1,3 +1,6 @@
+import { faCaretDown } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Collapsible from "react-collapsible";
 import { useProjectInfoContext } from "../../providers/ProjectInfoProvider";
 import Divider from "../presentational/Divider";
 import Input from "../presentational/Input";
@@ -21,11 +24,16 @@ export default function LinkRarities() {
       ) : null}
 
       {raritiesWithLayersRequiringPercentage.map((rarity) => (
-        <div key={rarity.name}>
-          <div className={`module`}>
+        <Collapsible
+          trigger={
             <Row className={"center"}>
-              Rarity:<Input disabled value={rarity.name}></Input>
+              <Input disabled value={rarity.name}></Input>
+              <FontAwesomeIcon icon={faCaretDown} className="icon pointer" />
             </Row>
+          }
+          key={rarity.name}
+        >
+          <div className={`module`}>
             {rarity.layers.map((layer) => (
               <div key={layer.name}>
                 <Row className={"center space-between"}>
@@ -34,7 +42,7 @@ export default function LinkRarities() {
                   </Row>
 
                   <Row className={"center"}>
-                    Layer Visible:
+                    Visible:
                     <Input
                       checked={layer.visible}
                       disabled={layer.disabled}
@@ -72,7 +80,8 @@ export default function LinkRarities() {
               </div>
             ))}
           </div>
-        </div>
+          <Divider></Divider>
+        </Collapsible>
       ))}
     </div>
   );

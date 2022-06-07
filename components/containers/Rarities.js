@@ -5,10 +5,12 @@ import Chip from "../presentational/Chip";
 import Divider from "../presentational/Divider";
 import Input from "../presentational/Input";
 import Row from "../presentational/Row";
+import Collapsible from "react-collapsible";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCaretDown, faRemove } from "@fortawesome/free-solid-svg-icons";
 
 export default function Rarities() {
   const {
-    projectSettings,
     layers,
     rarities,
     addRarity,
@@ -87,13 +89,20 @@ export default function Rarities() {
       <Divider></Divider>
 
       {rarities.map((rarity) => (
-        <div key={rarity.name}>
+        <Collapsible
+          trigger={
+            <Row className={"center"}>
+              <Button onClick={handleRemove(rarity)}>
+                <FontAwesomeIcon icon={faRemove} />
+              </Button>
+              <Input disabled value={rarity.name}></Input>
+              <FontAwesomeIcon icon={faCaretDown} className="icon pointer" />
+            </Row>
+          }
+          key={rarity.name}
+        >
           <Row className={"center"}>
-            Name:<Input disabled value={rarity.name}></Input>
-          </Row>
-
-          <Row className={"center"}>
-            Percentage: {Number(rarity.percentage).toFixed(1)}%
+            {Number(rarity.percentage).toFixed(1)}%
             <Input
               value={rarity.sliderValue}
               type="range"
@@ -103,7 +112,6 @@ export default function Rarities() {
               step={1}
               onChange={handleUpdate(rarity)}
             ></Input>
-            <Button onClick={handleRemove(rarity)}>Remove</Button>
           </Row>
 
           <Row className={"wrap center"}>
@@ -123,7 +131,7 @@ export default function Rarities() {
               );
             })}
           </Row>
-        </div>
+        </Collapsible>
       ))}
     </div>
   );

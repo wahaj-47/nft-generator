@@ -6,7 +6,7 @@ import Input from "../presentational/Input";
 import Row from "../presentational/Row";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars } from "@fortawesome/free-solid-svg-icons";
+import { faBars, faRemove } from "@fortawesome/free-solid-svg-icons";
 
 export default function Layers() {
   const { layers, addLayer, removeLayer, reorderLayers } =
@@ -76,9 +76,11 @@ export default function Layers() {
                       {...provided.dragHandleProps}
                       className="center"
                     >
-                      <FontAwesomeIcon icon={faBars} />
+                      <Button onClick={handleRemove(layer)}>
+                        <FontAwesomeIcon icon={faRemove} />
+                      </Button>
                       <Input disabled value={layer}></Input>
-                      <Button onClick={handleRemove(layer)}>Remove</Button>
+                      <FontAwesomeIcon icon={faBars} className="icon" />
                     </Row>
                   )}
                 </Draggable>

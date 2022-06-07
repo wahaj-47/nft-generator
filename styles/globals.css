@@ -74,3 +74,11 @@ a {
 .flex-0 {
   flex: 0;
 }
+
+.icon {
+  padding: 10px;
+}
+
+.pointer {
+  cursor: pointer;
+}
