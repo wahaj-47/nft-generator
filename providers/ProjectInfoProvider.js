@@ -448,6 +448,7 @@ export function ProjectInfoProvider({ children }) {
       });
 
       let newCollectionId = collectionId;
+      formData.set("collectionId", newCollectionId);
 
       if (!newCollectionId) {
         newCollectionId = await engine.setup(data);
