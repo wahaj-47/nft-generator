@@ -65,25 +65,27 @@ export function ProjectInfoProvider({ children }) {
     });
 
     rarities.forEach((rarity) => {
-      rarity.layers.forEach((layer) => {
-        updatedFileMap = {
-          ...updatedFileMap,
-          [layer]: {
-            ...updatedFileMap[layer],
-            childrenIds: [
-              ...updatedFileMap[layer].childrenIds,
-              layer + "/" + rarity.name,
-            ],
-          },
-          [layer + "/" + rarity.name]: {
-            id: layer + "/" + rarity.name,
-            name: rarity.name,
-            isDir: true,
-            childrenIds: [],
-            parentId: layer,
-          },
-        };
-      });
+      rarity.layers
+        .filter((rarityLayer) => layers.some((layer) => layer === rarityLayer))
+        .forEach((layer) => {
+          updatedFileMap = {
+            ...updatedFileMap,
+            [layer]: {
+              ...updatedFileMap[layer],
+              childrenIds: [
+                ...updatedFileMap[layer].childrenIds,
+                layer + "/" + rarity.name,
+              ],
+            },
+            [layer + "/" + rarity.name]: {
+              id: layer + "/" + rarity.name,
+              name: rarity.name,
+              isDir: true,
+              childrenIds: [],
+              parentId: layer,
+            },
+          };
+        });
     });
 
     files.forEach((file) => {
@@ -266,7 +268,7 @@ export function ProjectInfoProvider({ children }) {
                     rarities: updatedRarities.map((element) => ({
                       ...element,
                       percentage:
-                        (element.sliderValue * 100) / totalSliderValue,
+                        (element.sliderValue * 100) / (totalSliderValue || 1),
                     })),
                   };
                 }
