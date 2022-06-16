@@ -89,18 +89,28 @@ export function ProjectInfoProvider({ children }) {
     });
 
     files.forEach((file) => {
-      updatedFileMap = {
-        ...updatedFileMap,
-        [file.parent]: {
-          ...updatedFileMap[file.parent],
-          childrenIds: [...updatedFileMap[file.parent].childrenIds, file.id],
-        },
-        [file.id]: {
-          id: file.id,
-          name: file.file.name,
-          thumbnailUrl: file.url,
-        },
-      };
+      const fileLayer = file.parent.split("/")[0];
+      const fileRarity = file.parent.split("/")[1];
+      const rarity = rarities.find((rarity) => rarity.name === fileRarity);
+
+      if (layers.includes(fileLayer))
+        if (rarities.some((rarity) => rarity.name === fileRarity))
+          if (rarity.layers.includes(fileLayer))
+            updatedFileMap = {
+              ...updatedFileMap,
+              [file.parent]: {
+                ...updatedFileMap[file.parent],
+                childrenIds: [
+                  ...updatedFileMap[file.parent].childrenIds,
+                  file.id,
+                ],
+              },
+              [file.id]: {
+                id: file.id,
+                name: file.file.name,
+                thumbnailUrl: file.url,
+              },
+            };
     });
 
     setFileMap(updatedFileMap);
@@ -368,22 +378,22 @@ export function ProjectInfoProvider({ children }) {
     setFiles([]);
   };
 
-  const submit = async () => {
+  const isValid = () => {
     if (!projectSettings.name) {
       alert("Enter collection name");
-      return;
+      return false;
     }
     if (!projectSettings.description) {
       alert("Enter collection description");
-      return;
+      return false;
     }
     if (!projectSettings.size) {
       alert("Enter collection size");
-      return;
+      return false;
     }
     if (!projectSettings.width) {
       alert("Enter image width");
-      return;
+      return false;
     }
     if (!projectSettings.height) {
       alert("Enter image height");
@@ -391,26 +401,30 @@ export function ProjectInfoProvider({ children }) {
     }
     if (layers.length < 1) {
       alert("Add atleast one layer");
-      return;
+      return false;
     }
     if (rarities.length < 1) {
       alert("Add atleast one rairty");
-      return;
+      return false;
     }
     if (files.length < 1) {
       alert("Add files for layers");
-      return;
+      return false;
     }
+
+    return true;
+  };
+
+  const submit = async () => {
+    if (!isValid) return;
 
     try {
       let totalCount = 0;
-
       const links = rarities.map((rarity) => {
         const count = (rarity.percentage * projectSettings.size) / 100;
         totalCount += count;
         return { ...rarity, count };
       });
-
       if (totalCount > projectSettings.size) {
         const difference = totalCount - projectSettings.size;
         links[links.length - 1].count -= difference;
@@ -445,29 +459,33 @@ export function ProjectInfoProvider({ children }) {
       };
 
       const formData = new FormData();
+
       files.forEach((file) => {
-        formData.set(file.id, file.file, file.file.name);
+        const fileLayer = file.parent.split("/")[0];
+        const fileRarity = file.parent.split("/")[1];
+        const rarity = rarities.find((rarity) => rarity.name === fileRarity);
+
+        if (layers.includes(fileLayer))
+          if (rarities.some((rarity) => rarity.name === fileRarity))
+            if (rarity.layers.includes(fileLayer))
+              formData.set(file.id, file.file, file.file.name);
       });
 
       let newCollectionId = collectionId;
       formData.set("collectionId", newCollectionId);
-
       if (!newCollectionId) {
         newCollectionId = await engine.setup(data);
         setCollectionId(newCollectionId);
       }
-
       if (projectUpdated) {
         formData.set("collectionId", newCollectionId);
         await engine.uploadFiles(formData);
       }
-
       const blob = await engine.generate(newCollectionId);
       download(blob, `${newCollectionId}.zip`, "application/zip");
-
       setProjectUpdated(false);
     } catch (error) {
-      console.log(error);
+      console.log("Error", error);
     }
   };
 
