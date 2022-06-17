@@ -95,10 +95,11 @@ export default function Explorer() {
     fileInputRef.current.value = "";
   };
 
-  const onDrop = useCallback((acceptedFiles) => {
+  const onDrop = (acceptedFiles) => {
     // Do something with the files
+    console.log(acceptedFiles);
     addFiles(acceptedFiles, currentFolderId, () => {});
-  }, []);
+  };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,

@@ -54,10 +54,10 @@ export default function ProjectSettings() {
         ></Input>
       </Row>
       <Row className={"space-between"}>
-        <Button className={"flex mr-5"} disabled>
+        <Button onClick={submit(true)} className={"flex mr-5"}>
           Preview
         </Button>
-        <Button onClick={submit} className={"flex ml-5"}>
+        <Button onClick={submit(false)} className={"flex ml-5"}>
           Generate
         </Button>
       </Row>

@@ -422,79 +422,84 @@ export function ProjectInfoProvider({ children }) {
     return true;
   };
 
-  const submit = async () => {
-    if (!isValid) return;
+  const submit =
+    (isPreview = false) =>
+    async () => {
+      if (!isValid()) return;
 
-    try {
-      let totalCount = 0;
-      const links = rarities.map((rarity) => {
-        const count = (rarity.percentage * projectSettings.size) / 100;
-        totalCount += count;
-        return { ...rarity, count };
-      });
-      if (totalCount > projectSettings.size) {
-        const difference = totalCount - projectSettings.size;
-        links[links.length - 1].count -= difference;
-      }
+      try {
+        let totalCount = 0;
+        const links = rarities.map((rarity) => {
+          const count = isPreview
+            ? 1
+            : (rarity.percentage * projectSettings.size) / 100;
+          totalCount += count;
+          return { ...rarity, count };
+        });
 
-      const linkRelations = raritiesWithLayersRequiringPercentage
-        .filter((rarity) => rarity.layers.some((layer) => layer.visible))
-        .map((rarity) => ({
-          ...rarity,
-          layers: rarity.layers.filter((layer) => layer.visible),
-        }))
-        .map((rarity) =>
-          rarity.layers.map((layer) => {
-            const percentages = {};
-            layer.rarities.forEach((rarity) => {
-              percentages[rarity.name] = rarity.percentage;
-            });
-            return { link: rarity.name, layer: layer.name, percentages };
-          })
-        )
-        .flat();
+        if (!isPreview && totalCount > projectSettings.size) {
+          const difference = totalCount - projectSettings.size;
+          links[links.length - 1].count -= difference;
+        }
 
-      const data = {
-        name: projectSettings.name,
-        description: projectSettings.description,
-        size: Number(projectSettings.size),
-        width: Number(projectSettings.width),
-        height: Number(projectSettings.height),
-        layers,
-        links,
-        linkRelations,
-      };
+        const linkRelations = raritiesWithLayersRequiringPercentage
+          .filter((rarity) => rarity.layers.some((layer) => layer.visible))
+          .map((rarity) => ({
+            ...rarity,
+            layers: rarity.layers.filter((layer) => layer.visible),
+          }))
+          .map((rarity) =>
+            rarity.layers.map((layer) => {
+              const percentages = {};
+              layer.rarities.forEach((rarity) => {
+                percentages[rarity.name] = rarity.percentage;
+              });
+              return { link: rarity.name, layer: layer.name, percentages };
+            })
+          )
+          .flat();
 
-      const formData = new FormData();
+        const data = {
+          name: projectSettings.name,
+          description: projectSettings.description,
+          size: Number(isPreview ? rarities.length : projectSettings.size),
+          width: Number(projectSettings.width),
+          height: Number(projectSettings.height),
+          layers,
+          links,
+          linkRelations,
+        };
 
-      files.forEach((file) => {
-        const fileLayer = file.parent.split("/")[0];
-        const fileRarity = file.parent.split("/")[1];
-        const rarity = rarities.find((rarity) => rarity.name === fileRarity);
+        const formData = new FormData();
 
-        if (layers.includes(fileLayer))
-          if (rarities.some((rarity) => rarity.name === fileRarity))
-            if (rarity.layers.includes(fileLayer))
-              formData.set(file.id, file.file, file.file.name);
-      });
+        files.forEach((file) => {
+          const fileLayer = file.parent.split("/")[0];
+          const fileRarity = file.parent.split("/")[1];
+          const rarity = rarities.find((rarity) => rarity.name === fileRarity);
 
-      let newCollectionId = collectionId;
-      formData.set("collectionId", newCollectionId);
-      if (!newCollectionId) {
-        newCollectionId = await engine.setup(data);
-        setCollectionId(newCollectionId);
-      }
-      if (projectUpdated) {
+          if (layers.includes(fileLayer))
+            if (rarities.some((rarity) => rarity.name === fileRarity))
+              if (rarity.layers.includes(fileLayer))
+                formData.set(file.id, file.file, file.file.name);
+        });
+
+        let newCollectionId = collectionId;
         formData.set("collectionId", newCollectionId);
-        await engine.uploadFiles(formData);
+        if (!newCollectionId) {
+          newCollectionId = await engine.setup(data);
+          setCollectionId(newCollectionId);
+        }
+        if (projectUpdated) {
+          formData.set("collectionId", newCollectionId);
+          await engine.uploadFiles(formData);
+        }
+        const blob = await engine.generate(newCollectionId);
+        download(blob, `${newCollectionId}.zip`, "application/zip");
+        setProjectUpdated(false);
+      } catch (error) {
+        console.log("Error", error);
       }
-      const blob = await engine.generate(newCollectionId);
-      download(blob, `${newCollectionId}.zip`, "application/zip");
-      setProjectUpdated(false);
-    } catch (error) {
-      console.log("Error", error);
-    }
-  };
+    };
 
   return (
     <ProjectInfoContext.Provider
