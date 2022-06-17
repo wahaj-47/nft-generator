@@ -1,4 +1,5 @@
 import download from "downloadjs";
+import moment from "moment";
 import { createContext, useContext, useEffect, useState } from "react";
 import engine from "../services/engine";
 
@@ -36,6 +37,8 @@ export function ProjectInfoProvider({ children }) {
   }, [layers, rarities, projectSettings, files]);
 
   useEffect(() => {
+    const now = moment();
+
     let updatedFileMap = {
       root: {
         id: "root",
@@ -43,10 +46,11 @@ export function ProjectInfoProvider({ children }) {
         isDir: true,
         childrenIds: [],
         droppable: false,
+        modDate: now.subtract(1, "minute"),
       },
     };
 
-    layers.forEach((layer) => {
+    layers.forEach((layer, index) => {
       updatedFileMap = {
         ...updatedFileMap,
         root: {
@@ -60,11 +64,12 @@ export function ProjectInfoProvider({ children }) {
           childrenIds: [],
           parentId: "root",
           droppable: false,
+          modDate: now.add(index, "minute"),
         },
       };
     });
 
-    rarities.forEach((rarity) => {
+    rarities.forEach((rarity, index) => {
       rarity.layers
         .filter((rarityLayer) => layers.some((layer) => layer === rarityLayer))
         .forEach((layer) => {
@@ -83,12 +88,13 @@ export function ProjectInfoProvider({ children }) {
               isDir: true,
               childrenIds: [],
               parentId: layer,
+              modDate: now.add(index, "minute"),
             },
           };
         });
     });
 
-    files.forEach((file) => {
+    files.forEach((file, index) => {
       const fileLayer = file.parent.split("/")[0];
       const fileRarity = file.parent.split("/")[1];
       const rarity = rarities.find((rarity) => rarity.name === fileRarity);
@@ -109,6 +115,7 @@ export function ProjectInfoProvider({ children }) {
                 id: file.id,
                 name: file.file.name,
                 thumbnailUrl: file.url,
+                modDate: now.add(index, "minute"),
               },
             };
     });

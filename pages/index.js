@@ -9,7 +9,7 @@ import Head from "../components/presentational/Head";
 import Main from "../components/presentational/Main";
 import Row from "../components/presentational/Row";
 
-import { setChonkyDefaults } from "chonky";
+import { ChonkyActions, setChonkyDefaults } from "chonky";
 import { ChonkyIconFA } from "chonky-icon-fontawesome";
 import LinkRarities from "../components/containers/LinkRarities";
 import Header from "../components/containers/Header";
@@ -17,6 +17,7 @@ import Header from "../components/containers/Header";
 setChonkyDefaults({
   iconComponent: ChonkyIconFA,
   disableDragAndDrop: true,
+  defaultSortActionId: ChonkyActions.SortFilesByDate.id,
 });
 
 export default function Home() {

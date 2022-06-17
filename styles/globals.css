@@ -82,3 +82,11 @@ a {
 .pointer {
   cursor: pointer;
 }
+
+.dropzone {
+  margin: 20px 0;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  min-height: 150px;
+}

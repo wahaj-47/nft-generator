@@ -1,6 +1,7 @@
 import { ChonkyActions, FileHelper, FullFileBrowser } from "chonky";
 import { useProjectInfoContext } from "../../providers/ProjectInfoProvider";
 import { useCallback, useMemo, useRef, useState } from "react";
+import { useDropzone } from "react-dropzone";
 
 const useFiles = (currentFolderId) => {
   const { fileMap } = useProjectInfoContext();
@@ -69,6 +70,7 @@ export const useFileActionHandler = ({ setCurrentFolderId, fileInputRef }) => {
 
 export default function Explorer() {
   const { addFiles } = useProjectInfoContext();
+
   const fileInputRef = useRef(null);
 
   const [currentFolderId, setCurrentFolderId] = useState("root");
@@ -79,10 +81,11 @@ export default function Explorer() {
     fileInputRef,
   });
 
-  const myFileActions =
-    folderChain.length < 3
-      ? []
-      : [ChonkyActions.UploadFiles, ChonkyActions.DeleteFiles];
+  const canUpload = () => folderChain.length > 2;
+
+  const myFileActions = canUpload()
+    ? [ChonkyActions.UploadFiles, ChonkyActions.DeleteFiles]
+    : [];
 
   const onFileChange = (e) => {
     addFiles(e.target.files, currentFolderId, resetFileInput);
@@ -92,10 +95,23 @@ export default function Explorer() {
     fileInputRef.current.value = "";
   };
 
+  const onDrop = useCallback((acceptedFiles) => {
+    // Do something with the files
+    addFiles(acceptedFiles, currentFolderId, () => {});
+  }, []);
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: {
+      "image/png": [".png"],
+    },
+  });
+
   return (
     <div className={`module`}>
       <h1>Files</h1>
       <FullFileBrowser
+        disableDefaultFileActions
         files={files}
         folderChain={folderChain}
         fileActions={myFileActions}
@@ -103,6 +119,16 @@ export default function Explorer() {
         darkMode
         clearSelectionOnOutsideClick
       ></FullFileBrowser>
+      {canUpload() ? (
+        <div className={`module dropzone`} {...getRootProps()}>
+          <input {...getInputProps()} />
+          {isDragActive ? (
+            <p>Drop the files here ...</p>
+          ) : (
+            <p>Click or drop images here!</p>
+          )}
+        </div>
+      ) : null}
       <input
         value={null}
         type="file"
