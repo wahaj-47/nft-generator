@@ -2,6 +2,7 @@ import { ChonkyActions, FileHelper, FullFileBrowser } from "chonky";
 import { useProjectInfoContext } from "../../providers/ProjectInfoProvider";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
+import styles from "../../styles/Explorer.module.css";
 
 const useFiles = (currentFolderId) => {
   const { fileMap } = useProjectInfoContext();
@@ -109,7 +110,7 @@ export default function Explorer() {
   });
 
   return (
-    <div className={`module`}>
+    <div className={`module ${styles.container}`}>
       <h1>Files</h1>
       <FullFileBrowser
         disableDefaultFileActions
