@@ -8,6 +8,7 @@
   color: white;
   font-size: medium;
   border-radius: 5px;
+  width: 0.5em;
 }
 
 .disabled {

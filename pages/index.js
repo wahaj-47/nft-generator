@@ -28,7 +28,7 @@ export default function Home() {
       <Main>
         <Header></Header>
 
-        <Row>
+        <Row className="wrap">
           <Column>
             <ProjectSettings></ProjectSettings>
             <Layers></Layers>
