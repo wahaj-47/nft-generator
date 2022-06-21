@@ -38,7 +38,8 @@ export default function LinkRarities() {
               <div key={layer.name}>
                 <Row className={"center space-between"}>
                   <Row className={"center"}>
-                    Layer:<Input disabled value={layer.name}></Input>
+                    Layer:
+                    <Input disabled value={layer.name}></Input>
                   </Row>
 
                   <Row className={"center"}>

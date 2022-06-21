@@ -98,7 +98,6 @@ export default function Explorer() {
 
   const onDrop = (acceptedFiles) => {
     // Do something with the files
-    console.log(acceptedFiles);
     addFiles(acceptedFiles, currentFolderId, () => {});
   };
 

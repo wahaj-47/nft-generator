@@ -79,11 +79,11 @@ export function ProjectInfoProvider({ children }) {
               ...updatedFileMap[layer],
               childrenIds: [
                 ...updatedFileMap[layer].childrenIds,
-                layer + "/" + rarity.name,
+                layer + "\\" + rarity.name,
               ],
             },
-            [layer + "/" + rarity.name]: {
-              id: layer + "/" + rarity.name,
+            [layer + "\\" + rarity.name]: {
+              id: layer + "\\" + rarity.name,
               name: rarity.name,
               isDir: true,
               childrenIds: [],
@@ -95,8 +95,8 @@ export function ProjectInfoProvider({ children }) {
     });
 
     files.forEach((file, index) => {
-      const fileLayer = file.parent.split("/")[0];
-      const fileRarity = file.parent.split("/")[1];
+      const fileLayer = file.parent.split("\\")[0];
+      const fileRarity = file.parent.split("\\")[1];
       const rarity = rarities.find((rarity) => rarity.name === fileRarity);
 
       if (layers.includes(fileLayer))
@@ -346,7 +346,7 @@ export function ProjectInfoProvider({ children }) {
     const formattedFiles = Array.from(selectedFiles).map((file) => {
       const url = URL.createObjectURL(file);
       return {
-        id: `${currentFolderId}/${file.name}`,
+        id: `${currentFolderId}\\${file.name}`,
         file,
         url,
         parent: currentFolderId,
@@ -473,8 +473,8 @@ export function ProjectInfoProvider({ children }) {
         const formData = new FormData();
 
         files.forEach((file) => {
-          const fileLayer = file.parent.split("/")[0];
-          const fileRarity = file.parent.split("/")[1];
+          const fileLayer = file.parent.split("\\")[0];
+          const fileRarity = file.parent.split("\\")[1];
           const rarity = rarities.find((rarity) => rarity.name === fileRarity);
 
           if (layers.includes(fileLayer))
@@ -485,17 +485,19 @@ export function ProjectInfoProvider({ children }) {
 
         let newCollectionId = collectionId;
         formData.set("collectionId", newCollectionId);
-        if (!newCollectionId) {
+        if (true) {
           newCollectionId = await engine.setup(data);
           setCollectionId(newCollectionId);
         }
-        if (projectUpdated) {
+        if (true) {
           formData.set("collectionId", newCollectionId);
           await engine.uploadFiles(formData);
         }
-        const blob = await engine.generate(newCollectionId);
-        download(blob, `${newCollectionId}.zip`, "application/zip");
-        setProjectUpdated(false);
+        setTimeout(async () => {
+          const blob = await engine.generate(newCollectionId);
+          download(blob, `${newCollectionId}.zip`, "application/zip");
+          setProjectUpdated(false);
+        }, 5000);
       } catch (error) {
         console.log("Error", error);
       }
