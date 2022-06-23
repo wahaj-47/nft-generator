@@ -81,10 +81,11 @@ export default function Explorer() {
     setCurrentFolderId,
     fileInputRef,
   });
+  const [isDragging, setDragging] = useState(false);
 
-  const canUpload = () => folderChain.length > 2;
+  const canUpload = folderChain.length > 2;
 
-  const myFileActions = canUpload()
+  const myFileActions = canUpload
     ? [ChonkyActions.UploadFiles, ChonkyActions.DeleteFiles]
     : [];
 
@@ -101,15 +102,28 @@ export default function Explorer() {
     addFiles(acceptedFiles, currentFolderId, () => {});
   };
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  const { getRootProps, getInputProps } = useDropzone({
     onDrop,
     accept: {
       "image/png": [".png"],
     },
+    noClick: true,
   });
 
+  const showDropZone = () => {
+    setDragging(true);
+  };
+
+  const hideDropZone = () => {
+    setDragging(false);
+  };
+
   return (
-    <div className={`module ${styles.container}`}>
+    <div
+      onDragEnter={showDropZone}
+      onDrop={hideDropZone}
+      className={`module ${styles.container}`}
+    >
       <h1>Files</h1>
       <FullFileBrowser
         disableDefaultFileActions
@@ -120,14 +134,10 @@ export default function Explorer() {
         darkMode
         clearSelectionOnOutsideClick
       ></FullFileBrowser>
-      {canUpload() ? (
-        <div className={`module dropzone`} {...getRootProps()}>
+      {canUpload && isDragging ? (
+        <div className={`dropzone`} {...getRootProps()}>
           <input {...getInputProps()} />
-          {isDragActive ? (
-            <p>Drop the files here ...</p>
-          ) : (
-            <p>Click or drop images here!</p>
-          )}
+          <p>Drop the files here ...</p>
         </div>
       ) : null}
       <input
