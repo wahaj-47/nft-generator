@@ -107,7 +107,7 @@ export default function Rarities() {
               value={rarity.sliderValue}
               type="range"
               placeholder="Percentage"
-              min={1}
+              min={0}
               max={100}
               step={1}
               onChange={handleUpdate(rarity)}

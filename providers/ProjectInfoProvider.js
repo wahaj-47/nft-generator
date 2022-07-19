@@ -31,10 +31,56 @@ export function ProjectInfoProvider({ children }) {
   const [collectionId, setCollectionId] = useState(null);
   const [projectUpdated, setProjectUpdated] = useState(true);
 
+  const [isGeneratingPreviews, setGeneratingPreviews] = useState(false);
+  const [isGenerating, setGenerating] = useState(false);
+
   useEffect(() => {
-    setCollectionId("");
+    try {
+      const projectSettings = JSON.parse(
+        localStorage.getItem("projectSettings")
+      );
+      if (projectSettings) setProjectSettings(projectSettings);
+
+      const layers = JSON.parse(localStorage.getItem("layers"));
+      if (layers) setLayers(layers);
+
+      const rarities = JSON.parse(localStorage.getItem("rarities"));
+      if (rarities) setRarities(rarities);
+
+      const raritiesWithLayersRequiringPercentage = JSON.parse(
+        localStorage.getItem("raritiesWithLayersRequiringPercentage")
+      );
+      if (raritiesWithLayersRequiringPercentage)
+        setRaritiesWithLayersRequiringPercentage(
+          raritiesWithLayersRequiringPercentage
+        );
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("projectSettings", JSON.stringify(projectSettings));
+      localStorage.setItem("layers", JSON.stringify(layers));
+      localStorage.setItem("rarities", JSON.stringify(rarities));
+      localStorage.setItem(
+        "raritiesWithLayersRequiringPercentage",
+        JSON.stringify(raritiesWithLayersRequiringPercentage)
+      );
+    } catch (error) {
+      console.log(error);
+    }
+
+    setCollectionId(null);
     setProjectUpdated(true);
-  }, [layers, rarities, projectSettings, files]);
+  }, [
+    layers,
+    rarities,
+    projectSettings,
+    files,
+    raritiesWithLayersRequiringPercentage,
+  ]);
 
   useEffect(() => {
     const now = moment();
@@ -113,7 +159,7 @@ export function ProjectInfoProvider({ children }) {
               },
               [file.id]: {
                 id: file.id,
-                name: file.file.name,
+                name: file.name,
                 thumbnailUrl: file.url,
                 modDate: now.add(index, "minute"),
               },
@@ -227,7 +273,7 @@ export function ProjectInfoProvider({ children }) {
     setRarities(
       updatedRarities.map((element) => ({
         ...element,
-        percentage: (element.sliderValue * 100) / totalSliderValue,
+        percentage: (element.sliderValue * 100) / (totalSliderValue || 1),
       }))
     );
   };
@@ -300,17 +346,26 @@ export function ProjectInfoProvider({ children }) {
 
   useEffect(() => {
     const raritiesMissingLayers = rarities.filter(
-      (rarity) => rarity.layers.length < layers.length
+      (rarity) => rarity.layers.length < layers.length && rarity.percentage > 0
     );
 
     setRaritiesWithLayersRequiringPercentage(
       raritiesMissingLayers.map((rarity) => {
+        const layersInState = raritiesWithLayersRequiringPercentage.find(
+          (rarityWithLayerRequiringPercentage) =>
+            rarityWithLayerRequiringPercentage.name === rarity.name
+        )?.layers;
+
         const layersRequiringPercentage = layers
           .filter(
             (missingLayer) =>
               !rarity.layers.some((layer) => layer === missingLayer)
           )
           .map((layer) => {
+            const layerInState = layersInState?.find(
+              (layerInState) => layerInState.name === layer
+            );
+
             let raritiesWithMissingLayer = rarities.filter(
               (rarityWithMissingLayer) =>
                 rarityWithMissingLayer.layers.includes(layer)
@@ -318,16 +373,31 @@ export function ProjectInfoProvider({ children }) {
 
             let percentage = 100 / raritiesWithMissingLayer.length;
             raritiesWithMissingLayer = raritiesWithMissingLayer.map(
-              (rarity) => ({
-                ...rarity,
-                percentage,
-                sliderValue: 50,
-              })
+              (rarity) => {
+                const rarityInState = layerInState?.rarities.find(
+                  (rarityInState) => rarityInState.name === rarity.name
+                );
+
+                return {
+                  ...rarity,
+                  percentage:
+                    rarityInState?.percentage !== undefined
+                      ? rarityInState?.percentage
+                      : percentage,
+                  sliderValue:
+                    rarityInState?.sliderValue !== undefined
+                      ? rarityInState?.sliderValue
+                      : 50,
+                };
+              }
             );
 
             return {
               name: layer,
-              visible: raritiesWithMissingLayer.length > 0,
+              visible:
+                layerInState?.visible !== undefined
+                  ? layerInState?.visible
+                  : raritiesWithMissingLayer.length > 0,
               rarities: raritiesWithMissingLayer,
               disabled: raritiesWithMissingLayer.length < 1,
             };
@@ -350,6 +420,7 @@ export function ProjectInfoProvider({ children }) {
         file,
         url,
         parent: currentFolderId,
+        name: file.name,
       };
     });
 
@@ -428,6 +499,9 @@ export function ProjectInfoProvider({ children }) {
       if (!isValid()) return;
 
       try {
+        if (isPreview) setGeneratingPreviews(true);
+        else setGenerating(true);
+
         let totalCount = 0;
         const links = rarities.map((rarity) => {
           const count = isPreview
@@ -472,34 +546,43 @@ export function ProjectInfoProvider({ children }) {
 
         const formData = new FormData();
 
-        files.forEach((file) => {
-          const fileLayer = file.parent.split("\\")[0];
-          const fileRarity = file.parent.split("\\")[1];
-          const rarity = rarities.find((rarity) => rarity.name === fileRarity);
+        files
+          .filter((v, i, a) => a.findIndex((v2) => v2.id === v.id) === i)
+          .forEach((file) => {
+            const fileLayer = file.parent.split("\\")[0];
+            const fileRarity = file.parent.split("\\")[1];
+            const rarity = rarities.find(
+              (rarity) => rarity.name === fileRarity
+            );
 
-          if (layers.includes(fileLayer))
-            if (rarities.some((rarity) => rarity.name === fileRarity))
-              if (rarity.layers.includes(fileLayer))
-                formData.set(file.id, file.file, file.file.name);
-        });
+            if (layers.includes(fileLayer))
+              if (rarities.some((rarity) => rarity.name === fileRarity))
+                if (rarity.layers.includes(fileLayer))
+                  formData.set(file.id, file.file, file.file.name);
+          });
+
+        console.log(files);
 
         let newCollectionId = collectionId;
-        formData.set("collectionId", newCollectionId);
-        if (true) {
+        if (!newCollectionId) {
           newCollectionId = await engine.setup(data);
           setCollectionId(newCollectionId);
         }
-        if (true) {
-          formData.set("collectionId", newCollectionId);
+        formData.set("collectionId", newCollectionId);
+        if (projectUpdated) {
           await engine.uploadFiles(formData);
         }
-        setTimeout(async () => {
-          const blob = await engine.generate(newCollectionId);
-          download(blob, `${newCollectionId}.zip`, "application/zip");
-          setProjectUpdated(false);
-        }, 5000);
+        await new Promise((resolve) => setTimeout(resolve, 5000));
+        const blob = await engine.generate(newCollectionId);
+        download(blob, `${newCollectionId}.zip`, "application/zip");
+        setProjectUpdated(false);
+        if (isPreview) setGeneratingPreviews(false);
+        else setGenerating(false);
       } catch (error) {
         console.log("Error", error);
+        alert(error);
+        if (isPreview) setGeneratingPreviews(false);
+        else setGenerating(false);
       }
     };
 
@@ -526,6 +609,8 @@ export function ProjectInfoProvider({ children }) {
         fileMap,
         reset,
         submit,
+        isGeneratingPreviews,
+        isGenerating,
       }}
     >
       {children}

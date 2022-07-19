@@ -35,13 +35,22 @@ export default function LinkRarities() {
         >
           <div className={`module`}>
             {rarity.layers.map((layer) => (
-              <div key={layer.name}>
-                <Row className={"center space-between"}>
-                  <Row className={"center"}>
-                    Layer:
-                    <Input disabled value={layer.name}></Input>
+              <Collapsible
+                trigger={
+                  <Row className={"center space-between"}>
+                    <Row className={"center"}>
+                      Layer:
+                      <Input disabled value={layer.name}></Input>
+                    </Row>
+                    <FontAwesomeIcon
+                      icon={faCaretDown}
+                      className="icon pointer"
+                    />
                   </Row>
-
+                }
+                key={layer.name}
+              >
+                <div>
                   <Row className={"center"}>
                     Visible:
                     <Input
@@ -52,33 +61,33 @@ export default function LinkRarities() {
                       onChange={setLayerVisibility(rarity, layer)}
                     ></Input>
                   </Row>
-                </Row>
-
-                {layer.visible ? (
-                  <div className={`module`}>
-                    <h2>Rarity Percentages</h2>
-                    {layer.rarities.map((layerRarity) => (
-                      <Row key={layerRarity.name} className={"center"}>
-                        {layerRarity.name}:{" "}
-                        {Number(layerRarity.percentage).toFixed(1)}%
-                        <Input
-                          value={layerRarity.sliderValue}
-                          type="range"
-                          placeholder="Percentage"
-                          min={0}
-                          max={100}
-                          step={1}
-                          onChange={setLayerRarityPercentage(
-                            rarity,
-                            layer,
-                            layerRarity
-                          )}
-                        ></Input>
-                      </Row>
-                    ))}
-                  </div>
-                ) : null}
-              </div>
+                  {layer.visible ? (
+                    <div className={`module`}>
+                      <h2>Rarity Percentages</h2>
+                      {layer.rarities.map((layerRarity) => (
+                        <Row key={layerRarity.name} className={"center"}>
+                          {layerRarity.name}:{" "}
+                          {Number(layerRarity.percentage).toFixed(1)}%
+                          <Input
+                            value={layerRarity.sliderValue}
+                            type="range"
+                            placeholder="Percentage"
+                            min={0}
+                            max={100}
+                            step={1}
+                            onChange={setLayerRarityPercentage(
+                              rarity,
+                              layer,
+                              layerRarity
+                            )}
+                          ></Input>
+                        </Row>
+                      ))}
+                    </div>
+                  ) : null}
+                </div>
+                <Divider></Divider>
+              </Collapsible>
             ))}
           </div>
           <Divider></Divider>

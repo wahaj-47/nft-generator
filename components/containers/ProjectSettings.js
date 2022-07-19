@@ -5,8 +5,14 @@ import Row from "../presentational/Row";
 import styles from "../../styles/ProjectSettings.module.css";
 
 export default function ProjectSettings() {
-  const { projectSettings, updateProjectSettings, reset, submit } =
-    useProjectInfoContext();
+  const {
+    projectSettings,
+    updateProjectSettings,
+    reset,
+    submit,
+    isGenerating,
+    isGeneratingPreviews,
+  } = useProjectInfoContext();
 
   return (
     <div className={`module ${styles.container}`}>
@@ -55,10 +61,10 @@ export default function ProjectSettings() {
       </Row>
       <Row className={"space-between"}>
         <Button onClick={submit(true)} className={"flex mr-5"}>
-          Preview
+          {isGeneratingPreviews ? "Generating..." : "Preview"}
         </Button>
         <Button onClick={submit(false)} className={"flex ml-5"}>
-          Generate
+          {isGenerating ? "Generating..." : "Generate"}
         </Button>
       </Row>
     </div>
