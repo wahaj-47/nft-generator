@@ -506,7 +506,7 @@ export function ProjectInfoProvider({ children }) {
         const links = rarities.map((rarity) => {
           const count = isPreview
             ? 1
-            : (rarity.percentage * projectSettings.size) / 100;
+            : Math.ceil((rarity.percentage * projectSettings.size) / 100);
           totalCount += count;
           return { ...rarity, count };
         });
@@ -561,15 +561,13 @@ export function ProjectInfoProvider({ children }) {
                   formData.set(file.id, file.file, file.file.name);
           });
 
-        console.log(files);
-
-        let newCollectionId = collectionId;
+        let newCollectionId = null;
         if (!newCollectionId) {
           newCollectionId = await engine.setup(data);
           setCollectionId(newCollectionId);
         }
         formData.set("collectionId", newCollectionId);
-        if (projectUpdated) {
+        if (true) {
           await engine.uploadFiles(formData);
         }
         await new Promise((resolve) => setTimeout(resolve, 5000));
